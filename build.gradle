@@ -18,9 +18,12 @@ dependencies {
      */
     // https://mvnrepository.com/artifact/com.arakelian/java-jq
     implementation group: 'com.arakelian', name: 'java-jq', version: '1.3.0'
-    // https://mvnrepository.com/artifact/commons-codec/commons-codec
+    // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-client
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.1.2'
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.1.2'
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml - fixes CVE for brought up to springboot

@@ -6,20 +6,37 @@ import gay.envt.model.RecordOnlyName;
 import gay.envt.model.RecordWithDetails;
 import org.springframework.http.*;
 import org.springframework.javapoet.ClassName;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Properties;
+import java.security.Principal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 public class MainController
 {
+    @GetMapping("/")
+    public String homePage() {
+        return "Hello World!";
+    }
+
+    @GetMapping("/securePage")
+    public String securedPage(Authentication authentication) {
+
+        DefaultOAuth2User oauth2User =
+                (DefaultOAuth2User) authentication.getPrincipal();
+        Map<String,Object> attributes = oauth2User.getAttributes();
+        return "Welcome " + attributes.get("login") + ", your user id is: " + attributes.get("id");
+    }
 
     // Manages DNS entries on DigitalOcean. Using this API spec for pulling & putting data
     // https://docs.digitalocean.com/reference/api/api-reference/#tag/Domain-Records
@@ -29,7 +46,7 @@ public class MainController
     {
         Properties secrets = new Properties();
         try {
-            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secret.properties"));
+            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secrets.properties"));
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Secrets file couldn't load, preventing Digital Ocean API access");
@@ -102,7 +119,7 @@ public class MainController
 
         Properties secrets = new Properties();
         try {
-            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secret.properties"));
+            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secrets.properties"));
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Secrets file couldn't load, preventing Digital Ocean API access");
@@ -185,7 +202,7 @@ public class MainController
 
         Properties secrets = new Properties();
         try {
-            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secret.properties"));
+            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secrets.properties"));
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Secrets file couldn't load, preventing Digital Ocean API access");
@@ -239,7 +256,7 @@ public class MainController
 
         Properties secrets = new Properties();
         try {
-            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secret.properties"));
+            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secrets.properties"));
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Secrets file couldn't load, preventing Digital Ocean API access");

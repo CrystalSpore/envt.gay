@@ -1,4 +1,4 @@
-src/main/resources/secret.properties
+src/main/resources/secrets.properties
 
 ### Gradle ###
 .gradle
