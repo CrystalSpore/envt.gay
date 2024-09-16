@@ -4,6 +4,7 @@ import com.arakelian.jq.*;
 import gay.envt.model.DNSRecordJsonBody;
 import gay.envt.model.RecordOnlyName;
 import gay.envt.model.RecordWithDetails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.javapoet.ClassName;
 import org.springframework.security.core.Authentication;
@@ -17,13 +18,16 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 public class MainController
 {
+
+    @Value( "${DIGITALOCEAN_TOKEN}")
+    private String DIGITALOCEAN_TOKEN;
+
     @GetMapping("/")
     public String homePage() {
         return "Hello World!";
@@ -44,20 +48,13 @@ public class MainController
     @GetMapping("/getDomainRecords")
     public String getDomainRecords(@RequestParam("domain") String domain)
     {
-        Properties secrets = new Properties();
-        try {
-            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secrets.properties"));
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Secrets file couldn't load, preventing Digital Ocean API access");
-        }
         final String doURI = "https://api.digitalocean.com/v2/domains/" + domain + "/records";
 
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setBearerAuth(secrets.getProperty("DIGITALOCEAN_TOKEN"));
+        headers.setBearerAuth(DIGITALOCEAN_TOKEN);
 
         ResponseEntity<String> response = restTemplate.exchange(
                 doURI,
@@ -117,21 +114,13 @@ public class MainController
                     "Conflicts with an existing Record. Use 'Update Record' to change current value of an existing Record");
         }
 
-        Properties secrets = new Properties();
-        try {
-            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secrets.properties"));
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Secrets file couldn't load, preventing Digital Ocean API access");
-        }
-
         final String doURI = "https://api.digitalocean.com/v2/domains/" + domain + "/records";
 
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setBearerAuth(secrets.getProperty("DIGITALOCEAN_TOKEN"));
+        headers.setBearerAuth(DIGITALOCEAN_TOKEN);
 
         ResponseEntity<String> response = restTemplate.exchange(
                 doURI,
@@ -199,15 +188,6 @@ public class MainController
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Record doos not exist. Use 'Add Record' to create a new Record");
         }
-
-        Properties secrets = new Properties();
-        try {
-            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secrets.properties"));
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Secrets file couldn't load, preventing Digital Ocean API access");
-        }
-
         final String doURI = "https://api.digitalocean.com/v2/domains/" + domain + "/records/" + getRecordIDFromName(domain, jsonBody.getName());
 
         System.out.println(doURI);
@@ -216,7 +196,7 @@ public class MainController
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setBearerAuth(secrets.getProperty("DIGITALOCEAN_TOKEN"));
+        headers.setBearerAuth(DIGITALOCEAN_TOKEN);
 
         ResponseEntity<String> response = restTemplate.exchange(
                 doURI,
@@ -254,13 +234,6 @@ public class MainController
                     "Record name for this type does not exist. Validate entry of record name is correct");
         }
 
-        Properties secrets = new Properties();
-        try {
-            secrets.load(ClassName.class.getClassLoader().getResourceAsStream("secrets.properties"));
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Secrets file couldn't load, preventing Digital Ocean API access");
-        }
         final String doURI = "https://api.digitalocean.com/v2/domains/" + domain + "/records/" + getRecordIDFromName(domain, jsonBody.getName());
 
         System.out.println(doURI);
@@ -269,7 +242,7 @@ public class MainController
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setBearerAuth(secrets.getProperty("DIGITALOCEAN_TOKEN"));
+        headers.setBearerAuth(DIGITALOCEAN_TOKEN);
 
         ResponseEntity<String> response = restTemplate.exchange(
                 doURI,

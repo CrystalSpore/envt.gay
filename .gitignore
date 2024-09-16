@@ -1,4 +1,9 @@
-src/main/resources/secrets.properties
+.env
+application.properties
+
+### Emacs ###
+*~
+\#*\#
 
 ### Gradle ###
 .gradle
